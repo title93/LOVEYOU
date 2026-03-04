@@ -102,7 +102,7 @@ function sendEmailByForm(answer) {
   const form = document.createElement("form");
   form.method = "POST";
   form.action = GAS_WEBAPP_URL;
-  form.target = "hidden_iframe";
+  form.target = "_self";
   form.style.display = "none";
 
   const fields = {
@@ -143,4 +143,5 @@ if (btnYes) {
 if (btnNo) {
   btnNo.addEventListener("click", () => handleAnswer("ไม่ตกลง"));
 }
+
 
