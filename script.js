@@ -95,26 +95,35 @@ const TO_EMAIL = "titletukta2546@gmail.com";
 const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzikYJ_q_76Wd-UTb77dFQ4JZXlGOcWUsch1-2VrBwiMsQ9Uv-jWEQ7WRcDh0TfaFg_/exec";
 
 function sendEmailByForm(answer) {
+  if (!GAS_WEBAPP_URL) {
+    throw new Error("ยังไม่ได้ใส่ GAS_WEBAPP_URL");
+  }
 
-  const formData = new FormData();
+  const form = document.createElement("form");
+  form.method = "POST";
+  form.action = GAS_WEBAPP_URL;
+  form.target = "hidden_iframe";
+  form.style.display = "none";
 
-  formData.append("to_email", TO_EMAIL);
-  formData.append("answer", answer);
-  formData.append("timestamp", new Date().toLocaleString("th-TH"));
-  formData.append("user_agent", navigator.userAgent);
+  const fields = {
+    to_email: TO_EMAIL,
+    answer: answer,
+    timestamp: new Date().toLocaleString("th-TH"),
+    user_agent: navigator.userAgent
+  };
 
-  fetch(GAS_WEBAPP_URL, {
-    method: "POST",
-    body: formData
-  })
-  .then(res => res.text())
-  .then(data => {
-    console.log("ส่งสำเร็จ", data);
-  })
-  .catch(err => {
-    console.error("ส่งไม่สำเร็จ", err);
+  Object.keys(fields).forEach((key) => {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = key;
+    input.value = fields[key];
+    form.appendChild(input);
   });
 
+  document.body.appendChild(form);
+  form.submit();
+
+  setTimeout(() => form.remove(), 1000);
 }
 
 function handleAnswer(answer) {
@@ -134,6 +143,7 @@ if (btnYes) {
 if (btnNo) {
   btnNo.addEventListener("click", () => handleAnswer("ไม่ตกลง"));
 }
+
 
 
 
