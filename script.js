@@ -99,31 +99,25 @@ function sendEmailByForm(answer) {
     throw new Error("ยังไม่ได้ใส่ GAS_WEBAPP_URL");
   }
 
-  const form = document.createElement("form");
-  form.method = "POST";
-  form.action = GAS_WEBAPP_URL;
-  form.target = "_self";
-  form.style.display = "none";
-
-  const fields = {
-    to_email: TO_EMAIL,
-    answer: answer,
-    timestamp: new Date().toLocaleString("th-TH"),
-    user_agent: navigator.userAgent
-  };
-
-  Object.keys(fields).forEach((key) => {
-    const input = document.createElement("input");
-    input.type = "hidden";
-    input.name = key;
-    input.value = fields[key];
-    form.appendChild(input);
+  fetch(GAS_WEBAPP_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      to_email: TO_EMAIL,
+      answer: answer,
+      timestamp: new Date().toLocaleString("th-TH"),
+      user_agent: navigator.userAgent
+    })
+  })
+  .then(res => res.text())
+  .then(data => {
+    console.log("ส่งสำเร็จ:", data);
+  })
+  .catch(err => {
+    console.error("ส่งไม่สำเร็จ:", err);
   });
-
-  document.body.appendChild(form);
-  form.submit();
-
-  setTimeout(() => form.remove(), 1000);
 }
 
 function handleAnswer(answer) {
@@ -143,5 +137,6 @@ if (btnYes) {
 if (btnNo) {
   btnNo.addEventListener("click", () => handleAnswer("ไม่ตกลง"));
 }
+
 
 
